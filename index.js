@@ -85,6 +85,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     });
     const savedExercise = await newExercise.save();
     console.log('duration is: ', savedExercise.duration);
+
     res.json({
       _id: user._id,
       username: user.username,
@@ -101,7 +102,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 app.get('/api/users/:_id/logs', async (req, res) => {
   const userId = req.params._id;
   const { from, to, limit } = req.query;
-  
+
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).send('User not found');
@@ -113,7 +114,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
       if (to) filter.date.$lte = new Date(to); // Add 'to' date to the filter
     }
     
-    const exercises = await Exercise.find(filter).limit(parseInt(limit));
+    const exercises = await Exercise.find(filter).limit(parseInt(limit)).populate('userId', 'username');
     console.log('exercises are: ', exercises);
     res.json({
       username: user.username,
@@ -123,6 +124,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
         description: ex.description,
         duration: ex.duration,
         date: ex.date.toDateString(), // Convert to dateString format
+        user: ex.userId
       })),
     });
   } catch (err) {
