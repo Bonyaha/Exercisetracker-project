@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true }
 });
 
-// Create the model
+// Create the model for user
 let User = mongoose.model('User', userSchema);
 
 //Define the shema for exercise
@@ -40,7 +40,7 @@ const exerciseSchema = new mongoose.Schema({
   duration: Number,
   date: { type: Date, default: Date.now },
 })
-// Create the model
+// Create the model for exercise
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 
 app.post('/api/users', async (req, res) => {
@@ -73,6 +73,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   console.log('description is: ', description);
   console.log('date is: ', exerciseDate);
   console.log('duration is: ', typeof duration);
+  
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).send('User not found');
@@ -106,6 +107,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).send('User not found');
+    
     let filter = { userId }; // Initialize the filter with the userId
     if (from || to) {
       filter.date = {}; // Initialize the date filter
